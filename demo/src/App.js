@@ -1,8 +1,13 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EmployeeTable from "./Components/Table";
 import React from "react";
-import { Container, Button, Col, Row } from "react-bootstrap";
+import { Container, Col, Row } from "react-bootstrap";
 import "./App.css";
+import axios from "axios";
+import AddDialog from "./Components/AddDialog";
+
+
+const API_LIST_URL = "http://127.0.0.1:8000/list/"
 
 const EXAMPLE_DATA = {
   "employees": [
@@ -28,8 +33,11 @@ const EXAMPLE_DATA = {
 }
 
 export default class App extends React.Component {
-  contructor() {
-    // Do API Request
+  state = {
+    data: {"employees": []}
+  }
+  contructor() {    
+    this.update = this.update.bind(this);
   }
 
   render() {
@@ -41,11 +49,22 @@ export default class App extends React.Component {
           </Col>
 
           <Col className="align-right">
-            <Button>Add</Button>
+            <AddDialog update_data={() => this.update()}/>
           </Col>
         </Row>
-        <EmployeeTable data={EXAMPLE_DATA.employees}/>
+        <EmployeeTable data={this.state.data.employees} update_data={() => this.update()}/>
       </Container>
     )
+  }
+
+  componentDidMount() {
+    this.update();
+  }
+
+  update() {
+    // Updates API data
+    axios.get(API_LIST_URL).then(response => {
+      this.setState(response)
+    })
   }
 }

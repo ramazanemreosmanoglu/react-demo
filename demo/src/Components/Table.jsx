@@ -26,7 +26,7 @@ export default function EmployeeTable(props) {
                                 <td>{person.name}</td>
                                 <td>{person.email}</td>
                                 <td>{person.phone}</td>
-                                <td><EditDialog employee={person}/> <DeleteDialog id={person.id}/></td>
+                                <td><EditDialog employee={person} update_data={props.update_data}/> <DeleteDialog id={person.id} update_data={props.update_data}/></td>
                             </tr>
                         )
                     })}

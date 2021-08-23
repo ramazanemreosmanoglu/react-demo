@@ -12,8 +12,11 @@ export default function DeleteDialog(props) {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
-    const delete_and_close = () => {
-        delete_data(props.id);
+    const delete_and_close = async () => {
+        const result = await delete_data(props.id);
+        if(result === 0) {
+            props.update_data();
+        }
         setShow(false);
         // Add successful message.
     }
@@ -22,9 +25,9 @@ export default function DeleteDialog(props) {
         <>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Deleting a Person</Modal.Title>
+                    <Modal.Title>Deleting a Employee</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to remove this person?</Modal.Body>
+                <Modal.Body>Are you sure you want to remove this employee?</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
                         Close

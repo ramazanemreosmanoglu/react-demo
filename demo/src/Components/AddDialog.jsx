@@ -4,73 +4,56 @@ import {
     Button,
     Form,
 } from "react-bootstrap";
-import {edit_data} from "../actions";
+import {insert_data} from "../actions";
 
 
-export default function EditDialog(props) {
-    // States
+export default function AddDialog(props) {
+    const INITIAL_FORM = {
+        name: "",
+        email: "",
+        phone: "",
+    };
+
     const [show, setShow] = useState(false);
-    const [valid, setValid] = useState(true);
+    const [formData, setFormData] = useState(INITIAL_FORM);
+    const [valid, setValid] = useState(false);
 
-    const [name, setName] = useState(props.employee.name);
-    const [email, setEmail] = useState(props.employee.email);
-    const [phone, setPhone] = useState(props.employee.phone);
 
     const handleClose = () => {
-        // Set every value to it's first value,
-        // because user didn't saved anything.
-        setPhone(props.employee.phone);
-        setEmail(props.employee.email);
-        setName(props.employee.name);
-
         setShow(false);
+
+        setFormData(INITIAL_FORM);
     }
-    const handleChange = e => {
-        const target = e.target;
+    const handleChange = (event) => {
+        const target = event.target;
         const value = target.value;
         const name = target.name;
 
-        // Check for empty value
-        if(value === "") {
+        var copied = JSON.parse(JSON.stringify(formData));
+        copied[name] = value;
+        setFormData(copied);
+
+        if(formData.name === "" || formData.email === "" || formData.phone === "" || value === "") {
             setValid(false);
         } else {
             setValid(true);
         }
-
-        switch(name) {
-            case "name":
-                setName(value);
-                break;
-            case "email":
-                setEmail(value);
-                break;
-            case "phone":
-                setPhone(value);
-                break;
-            default:
-                console.log("ERROR: Input value is not matching.")
-        }
-
     }
 
-    const onSave = async () => {
-        const result = await edit_data({
-            id: props.employee.id,
-            name: name,
-            email: email,
-            phone: phone,
-        })
-        if(result === 0) {
+    const save_employee = async () => {
+        const result = await insert_data(formData.name, formData.email, formData.phone);
+        if(result === 0){
             props.update_data();
         }
         setShow(false);
+        setFormData(INITIAL_FORM);
     }
 
     return (
         <>
-        <Modal show={show} onHide={handleClose} backdrop="static">
+            <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit an Employee</Modal.Title>
+                    <Modal.Title>Insert Employee</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -79,7 +62,7 @@ export default function EditDialog(props) {
                             <Form.Control 
                                 type="text"
                                 placeholder="Name and Surname"
-                                value={name}
+                                value={formData.name}
                                 required
                                 onChange={handleChange}
                                 name="name"
@@ -91,7 +74,7 @@ export default function EditDialog(props) {
                             <Form.Control 
                                 type="email"
                                 placeholder="Email"
-                                value={email}
+                                value={formData.email}
                                 required
                                 onChange={handleChange}
                                 name="email"
@@ -103,7 +86,7 @@ export default function EditDialog(props) {
                             <Form.Control 
                                 type="phone"
                                 placeholder="Phone Number"
-                                value={phone}
+                                value={formData.phone}
                                 required
                                 onChange={handleChange}
                                 name="phone"
@@ -115,13 +98,13 @@ export default function EditDialog(props) {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                     </Button>
-                    <Button variant="primary" onClick={onSave} disabled={!valid}>
+                    <Button variant="primary" onClick={save_employee} disabled={!valid}>
                         Save
                     </Button>
                 </Modal.Footer>
-        </Modal>
+            </Modal>
 
-        <Button variant="link" onClick={() => setShow(true)}>Edit</Button>
+            <Button variant="primary" onClick={() => setShow(true)}>Add</Button>
         </>
     )
 }
